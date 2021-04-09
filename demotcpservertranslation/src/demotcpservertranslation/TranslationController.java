@@ -2,7 +2,6 @@ package demotcpservertranslation;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import demotcptranslationdata.MessageToTranslate;
 
 /**

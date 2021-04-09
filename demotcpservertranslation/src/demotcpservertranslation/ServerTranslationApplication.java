@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import demoserverview.ServerTranslationApplicationFrame;
 import demotcptranslationdata.MessageToTranslate;
 
 /**
@@ -24,6 +24,10 @@ public class ServerTranslationApplication {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 
+		// Launch GUI
+		ServerTranslationApplicationFrame frame = new ServerTranslationApplicationFrame();
+		frame.setVisible(true);
+
 		ServerSocket serverSocket = null;
 
 		try {
@@ -35,6 +39,8 @@ public class ServerTranslationApplication {
 
 			while (true) {
 
+				frame.updateServerStatus(false);
+
 				// Accept client request for connection
 				Socket clientSocket = serverSocket.accept();
 
@@ -44,22 +50,26 @@ public class ServerTranslationApplication {
 				// Create Object input stream to read object from the input stream
 				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
-				// Initiliaze the message object from reading the input stream
+				// Initialize the message object from reading the input stream
 				MessageToTranslate message = (MessageToTranslate) objectInputStream.readObject();
 
 				// Create new translation controller
 				TranslationController translationController = new TranslationController();
-				
-				String translatedMessage = translationController.getTranslation(message);	
-								
+
+				// Get translated message
+				String translatedMessage = translationController.getTranslation(message);
+
 				// Create stream to write data on the network
 				DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
-				
+
 				// Send current date back to the client
 				outputStream.writeUTF(translatedMessage);
-				
+
 				// CLose the socket
 				clientSocket.close();
+
+				// Update request status
+				frame.updateRequestStatus("Data sent to client: " + translatedMessage);
 
 			}
 
